@@ -11,9 +11,9 @@
                 "isDefault": false
             }
         },{
-            "label": "run",
+            "label": "example",
             "type": "shell",
-            "command": "zig build run",
+            "command": "${env:HOME}/.local/bin/zig build example",
             "problemMatcher": [],
             "group": {
                 "kind": "build",

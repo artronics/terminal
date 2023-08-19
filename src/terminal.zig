@@ -6,6 +6,11 @@ const c = @cImport({
     @cInclude("sys/ioctl.h");
 });
 
+const str = "hello from terminal lib";
+pub fn testLib() []const u8 {
+    return str[0..];
+}
+
 var orig_termios: c.struct_termios = undefined;
 
 const TerminalError = error{ RawMode, ReadError, WriteError };
