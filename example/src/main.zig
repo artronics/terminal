@@ -1,8 +1,17 @@
 const std = @import("std");
-const terminal = @import("terminal");
+const term = @import("terminal");
 
 pub fn main() !void {
-    std.debug.print("call to the terminal lib: ", .{"codebase"});
+    var in = std.io.getStdIn();
+    var out = std.io.getStdOut();
+
+    try term.enableRawMode(in);
+    defer term.disableRawMode(in);
+
+    var t = term.Terminal.init(in, out);
+    const pos = try t.getCursorPos();
+
+    std.debug.print("\n\rterm pos: rows: {d} cols: {d}\n", .{pos.y, pos.x});
 }
 
 test "simple test" {

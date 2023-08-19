@@ -6,11 +6,6 @@ const c = @cImport({
     @cInclude("sys/ioctl.h");
 });
 
-const str = "hello from terminal lib";
-pub fn testLib() []const u8 {
-    return str[0..];
-}
-
 var orig_termios: c.struct_termios = undefined;
 
 const TerminalError = error{ RawMode, ReadError, WriteError };
@@ -49,14 +44,14 @@ pub const Terminal = struct {
     pub const Pos = struct { x: usize, y: usize };
 
     const Self = @This();
-    fn init(in: fs.File, out: fs.File) Self {
+    pub fn init(in: fs.File, out: fs.File) Self {
         return Terminal{
             .in = in,
             .out = out,
         };
     }
 
-    fn getCursorPos(self: Self) !Terminal.Pos {
+    pub fn getCursorPos(self: Self) !Terminal.Pos {
         try self.out.writeAll(esc_get_pos);
 
         var in_reader = self.in.reader();
@@ -76,13 +71,13 @@ pub const Terminal = struct {
         return .{ .x = x, .y = y };
     }
 
-    fn setCursorPos(self: Self, pos: Pos) !void {
+    pub fn setCursorPos(self: Self, pos: Pos) !void {
         var buf: [32]u8 = undefined;
         const seq = try std.fmt.bufPrint(&buf, "\x1b[{d};{d}H", .{ pos.y, pos.x });
         try self.out.writeAll(seq);
     }
 
-    fn getWindowSize(self: Self) !Pos {
+    pub fn getWindowSize(self: Self) !Pos {
         const cur_pos = try self.getCursorPos();
 
         try self.out.writeAll("\x1b[999C\x1b[999B");
